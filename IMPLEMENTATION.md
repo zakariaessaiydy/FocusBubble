@@ -50,3 +50,16 @@ Dependency installation succeeded after upgrading Lucide to a React 19-compatibl
 Added GitHub checks and a version-tag/manual Android release workflow. It runs checks, submits a standalone signed preview APK build to EAS, waits for completion, downloads the artifact, calculates SHA-256, and publishes a GitHub testing prerelease. EAS now uses remote version counters and explicitly disables development-client behavior for the preview APK. Instructions and device release notes are in `docs/`.
 
 Validation: full typecheck and lint pass, all 21 tests pass, both workflow YAML files parse, and release scripts pass Node syntax checks. Release tests reject unsafe tags and failed/non-Android/insecure build artifacts. These are local validations; no GitHub workflow or EAS native build has run. Repository access/destination, Expo project linkage and Android signing setup are still required before publishing a downloadable APK.
+
+## First Android prerelease — October 27, 2026
+
+The previous native-build and account-setup blockers are resolved. FocusBubble is linked to Expo project `3e14e4c4-67f4-4a74-ad4d-71c6c6191616` under `ziko990022`. EAS generated and manages the Android signing key.
+
+- EAS Android preview build `3ba7dec9-101e-4d21-a8e6-0bc7cc364b03` finished successfully, including native compilation. App version 1.0.0, Android versionCode 2, built from commit `8d1f0f779e3623ec26680b5727fbf572f39d576f`.
+- Full lint/typecheck and all 22 tests pass. GitHub checks also pass.
+- The approved Expo CI token is stored as GitHub's encrypted `EXPO_TOKEN` secret. Scoped tokens were unavailable on this Expo account, so a full-access token was created only after explicit user approval. No token is committed to source.
+- GitHub workflow [40586487787](https://github.com/zakariaessaiydy/FocusBubble/actions/runs/40586487787) successfully downloaded the completed Expo APK and published the testing prerelease without rebuilding it.
+- [v1.0.0-preview.1](https://github.com/zakariaessaiydy/FocusBubble/releases/tag/v1.0.0-preview.1) includes the 107,913,513-byte APK, SHA256SUMS.txt and build-info.json. The tag points to the commit actually built.
+- APK SHA-256: `c9e1e42a03dd17a054c33261eed221ad8a953e778cebf34690969f4b66b6cc65`.
+
+No physical-device installation or runtime validation has been performed by this agent. Overlay dragging, cross-app behavior, permissions, notifications and lifecycle recovery still need the device acceptance checklist in README. A successful signed native build establishes compilation, not device compatibility.
