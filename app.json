@@ -28,6 +28,17 @@
       "expo-router",
       "expo-sqlite",
       "expo-notifications"
-    ]
+    ],
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "3e14e4c4-67f4-4a74-ad4d-71c6c6191616"
+      }
+    },
+    "owner": "ziko990022"
   }
 }
