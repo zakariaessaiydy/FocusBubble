@@ -17,3 +17,10 @@ export function buildArtifact(result) {
   if (url.protocol !== 'https:') throw Error('Expected an HTTPS build artifact.');
   return { url, id: build.id };
 }
+
+export function completedPreviewArtifact(build, projectId) {
+  if (!projectId || build.app?.id !== projectId) throw Error('Build belongs to another Expo project.');
+  if (build.buildProfile !== 'preview' || build.distribution !== 'INTERNAL') throw Error('Expected a standalone internal preview APK.');
+  if (!/^[a-f0-9]{40}$/i.test(build.gitCommitHash ?? '')) throw Error('Build has no valid Git commit.');
+  return buildArtifact(build);
+}

@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { buildArtifact, validateTag } from '../scripts/release-utils.mjs';
+import { buildArtifact, completedPreviewArtifact, validateTag } from '../scripts/release-utils.mjs';
 
 test('release tags are safe version strings', () => {
   assert.equal(validateTag('v1.0.0-preview.1'), 'v1.0.0-preview.1');
@@ -27,4 +27,12 @@ test('testing profile is an installable standalone APK with remote version incre
   assert.equal(eas.build.preview.developmentClient, false);
   assert.equal(eas.build.preview.autoIncrement, true);
   assert.equal(eas.cli.appVersionSource, 'remote');
+});
+
+test('publishing an existing APK validates the project, preview profile and source commit', () => {
+  const build = { id: 'build', status: 'FINISHED', platform: 'ANDROID', app: { id: 'project' }, buildProfile: 'preview', distribution: 'INTERNAL', gitCommitHash: 'a'.repeat(40), artifacts: { buildUrl: 'https://example.com/app.apk' } };
+  assert.equal(completedPreviewArtifact(build, 'project').id, 'build');
+  assert.throws(() => completedPreviewArtifact(build, 'another-project'));
+  assert.throws(() => completedPreviewArtifact({ ...build, buildProfile: 'development' }, 'project'));
+  assert.throws(() => completedPreviewArtifact({ ...build, gitCommitHash: 'not-a-commit' }, 'project'));
 });

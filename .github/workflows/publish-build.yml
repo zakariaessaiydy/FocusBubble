@@ -1,0 +1,57 @@
+name: Publish completed Expo APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_id:
+        description: 'Successful Expo Android preview build ID'
+        required: true
+        type: string
+      tag:
+        description: 'New version tag, for example v1.0.0-preview.1'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-apk-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      RELEASE_TAG: ${{ inputs.tag }}
+      EAS_BUILD_ID: ${{ inputs.build_id }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+      - name: Verify release does not exist
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node --input-type=module -e "import {validateTag} from './scripts/release-utils.mjs'; validateTag(process.env.RELEASE_TAG)"
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo 'This release already exists. Choose a new tag.'
+            exit 1
+          fi
+      - name: Download completed APK from Expo
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: node scripts/download-completed-build.mjs
+      - name: Publish downloadable testing release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          BUILD_COMMIT=$(node -p "JSON.parse(require('fs').readFileSync('release-artifacts/build-info.json','utf8')).commit")
+          git cat-file -e "$BUILD_COMMIT^{commit}"
+          gh release create "$RELEASE_TAG" release-artifacts/* \
+            --target "$BUILD_COMMIT" --prerelease --title "FocusBubble $RELEASE_TAG" \
+            --notes-file docs/ANDROID_RELEASE_NOTES.md

@@ -34,6 +34,8 @@ Download `FocusBubble-v1.0.0-preview.1.apk` under **Releases → Assets** on you
 
 Normal branch pushes and pull requests run checks only. Android builds run only for version tags or a manual release workflow. No Google Play submission is configured. The `production` profile generates a store bundle; use `preview` for direct APK downloads.
 
+If the preview APK was already built successfully, use **Actions → Publish completed Expo APK → Run workflow** with its build ID and a new release tag. This downloads the existing APK directly from Expo and publishes it without using another build. It verifies that the build belongs to this project, uses the preview profile, and has a known Git commit. The release tag points to the commit actually built.
+
 ## Troubleshooting
 
 - **Missing EXPO_TOKEN / projectId:** finish the one-time setup and commit its configuration.
