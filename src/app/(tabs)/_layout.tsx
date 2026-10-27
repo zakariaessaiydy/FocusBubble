@@ -1,0 +1,4 @@
+import { Tabs } from 'expo-router';
+import { Home, Target, Timer, ChartNoAxesColumn, Settings } from 'lucide-react-native';
+import { useTheme } from '../../components/ui';
+export default function TabLayout() { const t = useTheme(); return <Tabs screenOptions={{ headerShown: false, tabBarActiveTintColor: t.primary, tabBarInactiveTintColor: t.muted, tabBarStyle: { backgroundColor: t.card, borderTopColor: t.line, paddingTop: 8, height: 84, paddingBottom: 24 }, tabBarLabelStyle: { fontSize: 10, fontWeight: '600' } }}>{[['index', 'Today', Home], ['goals', 'My goals', Target], ['focus', 'Focus', Timer], ['progress', 'Progress', ChartNoAxesColumn], ['settings', 'Settings', Settings]].map(([name, title, Icon]) => <Tabs.Screen key={name as string} name={name as string} options={{ title: title as string, tabBarIcon: ({ color, size }) => { const I = Icon as typeof Home; return <I color={color} size={size} strokeWidth={1.8}/>; } }}/>)}</Tabs>; }
